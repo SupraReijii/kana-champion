@@ -1,0 +1,27 @@
+// Entry point for your Sass build
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@100..900&display=swap');
+
+
+.start-button {
+  border: 1px solid black;
+  width: 100%;
+  padding: 5px;
+}
+
+.start-button:hover {
+  background: #c1c1c1;
+  cursor: pointer;
+}
+
+
+.current_kana {
+  font-size: 36px;
+  font-weight: bold;
+  font-family: "Noto Sans JP", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.timer {
+  margin: 5px;
+}

@@ -1,0 +1,2 @@
+class Kana < ApplicationRecord
+end
