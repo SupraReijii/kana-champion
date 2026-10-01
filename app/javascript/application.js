@@ -99,7 +99,7 @@ function game_logic() {
 
 function show_feedback(correct) {
     let card = $('.kc-card').removeClass('is-correct is-wrong')
-    card[0].offsetWidth // restart animation
+    card[0].offsetWidth
     card.addClass(correct ? 'is-correct' : 'is-wrong')
 
     let last = mistakes[mistakes.length - 1]
@@ -114,7 +114,35 @@ function game_end() {
     $('.kc-result-points').text(points + '/' + total)
     $('.kc-result-accuracy').text(Math.round(points / total * 100) + '%')
     $('.kc-result-time').text(format_time(timeleft) + 's')
-
+    const gameResults = {
+        game: {
+            game_name: 'classic',
+            points: 0,
+            time: format_time(timeleft),
+            kana_count: total,
+            kana_right: points,
+        }
+    }
+    fetch('api/game', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(gameResults)
+    })
+        .then(resp => {
+            if (!resp.ok) {
+                throw new Error('HTTP Error! Code: ' + resp.status)
+            }
+            return resp.json()
+        })
+        .then(data => {
+            console.log(data)
+        })
+        .then(error => {
+            console.log(error)
+        })
     let list = $('.kc-mistakes__list').empty()
     mistakes.forEach(m => {
         list.append(
