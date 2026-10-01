@@ -3,40 +3,62 @@ import "@hotwired/turbo-rails"
 import "./controllers"
 import { $ } from "jquery"
 
-let game_container = $('.game')
 let points = 0
-let game_kanas = {}
-let kanas_list = undefined
+let total = 0
+let kanas_list = []
+let current = null
+let mistakes = []
 let intervalVariable = undefined
-let intervalTime = 5
+let intervalTime = 10
 let timeleft = 0
 
+// Delegated handlers: the game page can be loaded via Turbo after this script runs
+$(document).on('click', '.start-button, .restart-button', function () {
+    let types = $('input[name="kana_type"]:checked').map((_, el) => el.value).get()
+    if (types.length === 0) {
+        show_screen('start')
+        $('.kc-error').prop('hidden', false)
+        return
+    }
+    $('.kc-error').prop('hidden', true)
 
-$('.start-button').on('click', function (){
-    loadKanas().then(r => {
-        $('.start-button').css('visibility', 'hidden')
+    let button = $(this).prop('disabled', true)
+    loadKanas(types).then(() => {
+        reset_game()
+        show_screen('game')
         start_timer()
         game_logic()
-    })
+    }).finally(() => button.prop('disabled', false))
 })
 
-$(document).on('keydown', '#input_kana', function(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        let point = $('.current_kana').attr('data-value')
-        let value = $('#input_kana').val()
-        if (point === value) {
-            points++
-        } else {
-            console.log('false')
-        }
-        if (kanas_list.length > 0) {
-            game_logic()
-        } else {
-            game_end(timeleft).then(r => stop_timer())
-        }
+$(document).on('change', 'input[name="kana_type"]', function () {
+    $('.kc-error').prop('hidden', true)
+})
+
+$(document).on('submit', '.kc-answer', function (e) {
+    e.preventDefault()
+    if (!current) return
+
+    let value = $('#input_kana').val().trim().toLowerCase()
+    if (value === '') return
+
+    let correct = value === current.translation.toLowerCase()
+    if (correct) {
+        points++
+    } else {
+        mistakes.push({ kana: current.kana, translation: current.translation, answer: value })
     }
-});
+    show_feedback(correct)
+
+    if (kanas_list.length > 0) {
+        game_logic()
+    } else {
+        stop_timer()
+        game_end()
+    }
+})
+
+$(document).on('turbo:before-visit', stop_timer)
 
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -46,42 +68,83 @@ function shuffle(array) {
     return array
 }
 
-async function loadKanas() {
-    const response = await fetch('api/kana')
+async function loadKanas(types) {
+    const response = await fetch('/api/kana?type=' + encodeURIComponent(types.join(',')))
     const data = await response.json()
+    kanas_list = shuffle(data.map(val => ({ kana: val.kana, translation: val.translation.toString() })))
+    total = kanas_list.length
+}
 
-    data.forEach((val) => {
-        game_kanas[val.translation.toString()] = val.kana
+function reset_game() {
+    points = 0
+    mistakes = []
+    timeleft = 0
+    $('.timer').text(format_time(0))
+    $('.kc-feedback').text('').removeClass('is-correct is-wrong')
+}
+
+function show_screen(name) {
+    $('.kc-screen').prop('hidden', true)
+    $('.kc-screen--' + name).prop('hidden', false)
+}
+
+function game_logic() {
+    current = kanas_list.shift()
+    $('.current_kana').text(current.kana)
+    $('.kc-points').text(points)
+    $('.kc-left').text(kanas_list.length + 1)
+    $('.kc-progress__bar').css('width', ((total - kanas_list.length - 1) / total * 100) + '%')
+    $('#input_kana').val('').trigger('focus')
+}
+
+function show_feedback(correct) {
+    let card = $('.kc-card').removeClass('is-correct is-wrong')
+    card[0].offsetWidth // restart animation
+    card.addClass(correct ? 'is-correct' : 'is-wrong')
+
+    let last = mistakes[mistakes.length - 1]
+    $('.kc-feedback')
+        .removeClass('is-correct is-wrong')
+        .addClass(correct ? 'is-correct' : 'is-wrong')
+        .text(correct ? 'Верно!' : 'Неверно: ' + last.kana + ' — ' + last.translation)
+}
+
+function game_end() {
+    current = null
+    $('.kc-result-points').text(points + '/' + total)
+    $('.kc-result-accuracy').text(Math.round(points / total * 100) + '%')
+    $('.kc-result-time').text(format_time(timeleft) + 's')
+
+    let list = $('.kc-mistakes__list').empty()
+    mistakes.forEach(m => {
+        list.append(
+            $('<li>').append(
+                $('<span class="kc-mistakes__kana">').text(m.kana),
+                $('<s>').text(m.answer),
+                $('<span>').text(m.translation)
+            )
+        )
     })
+    $('.kc-mistakes').prop('hidden', mistakes.length === 0)
 
-    console.log(game_kanas)
-    kanas_list = shuffle(Object.keys(game_kanas))
-    console.log(kanas_list)
+    show_screen('result')
 }
 
-function game_logic(){
-    let current_kana = kanas_list.shift()
-    game_container.html('<p class="current_kana" data-value="'+ current_kana +'">' + game_kanas[current_kana] + '</p><input id="input_kana">')
-    $('#input_kana').focus()
-}
-
-async function game_end(timeleft){
-    game_container.html('<h1>GAME OVER</h1>' +
-        '<h2>Your points: ' + points + '</h2>' +
-        '<h2>Your time: ' + timeleft / 1000 + ' seconds</h2>')
-}
-
-function start_timer(){
+function start_timer() {
+    stop_timer()
     intervalVariable = setInterval(update_time, intervalTime)
 }
 
 function stop_timer() {
     clearInterval(intervalVariable)
-    timeleft = 0
-    $('.timer').html('<span></span>')
+    intervalVariable = undefined
 }
 
-function update_time(){
-    timeleft = timeleft + intervalTime;
-    $('.timer').html('<span>' + Math.floor(timeleft / 1000) + '.' + Math.floor(timeleft % 1000 / 10) + '</span>')
+function update_time() {
+    timeleft = timeleft + intervalTime
+    $('.timer').text(format_time(timeleft))
+}
+
+function format_time(ms) {
+    return Math.floor(ms / 1000) + '.' + String(Math.floor(ms % 1000 / 10)).padStart(2, '0')
 }

@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_29_123729) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_01_032131) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "games", force: :cascade do |t|
     t.string "game_name", null: false
-    t.integer "points"
+    t.decimal "points", precision: 5, scale: 2
     t.integer "time"
     t.integer "kana_count"
     t.integer "kana_right"

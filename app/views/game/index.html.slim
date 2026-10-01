@@ -1,3 +1,64 @@
-span.start-button Начать
-.timer
-.game
+.kc
+  header.kc-header
+    = link_to root_path, class: "kc-logo" do
+      span.kc-logo__mark 仮
+      span.kc-logo__name Kana Champion
+
+  main.kc-stage
+    section.kc-screen.kc-screen--start
+      h1.kc-title かな
+      p.kc-subtitle Вводи ромадзи для каждого символа — как можно быстрее и без ошибок.
+
+      .kc-options
+        label.kc-option
+          input type="checkbox" name="kana_type" value="hiragana" checked=true
+          span.kc-option__card
+            span.kc-option__glyph あ
+            span.kc-option__name Хирагана
+        label.kc-option
+          input type="checkbox" name="kana_type" value="katakana"
+          span.kc-option__card
+            span.kc-option__glyph ア
+            span.kc-option__name Катакана
+
+      p.kc-error hidden=true Выбери хотя бы одну азбуку
+      button.kc-button.start-button type="button" Начать
+
+    section.kc-screen.kc-screen--game hidden=true
+      .kc-hud
+        .kc-hud__item
+          span.kc-hud__label Время
+          span.kc-hud__value.timer 0.00
+        .kc-hud__item
+          span.kc-hud__label Верно
+          span.kc-hud__value.kc-points 0
+        .kc-hud__item
+          span.kc-hud__label Осталось
+          span.kc-hud__value.kc-left 0
+      .kc-progress
+        .kc-progress__bar
+
+      .kc-card
+        p.current_kana
+      form.kc-answer autocomplete="off"
+        input#input_kana type="text" placeholder="romaji" autocapitalize="off" spellcheck="false"
+        span.kc-hint Enter — ответить
+      p.kc-feedback
+
+    section.kc-screen.kc-screen--result hidden=true
+      h2.kc-result__title おわり
+      p.kc-subtitle Игра окончена
+      .kc-stats
+        .kc-stat
+          span.kc-stat__value.kc-result-points
+          span.kc-stat__label Верно
+        .kc-stat
+          span.kc-stat__value.kc-result-accuracy
+          span.kc-stat__label Точность
+        .kc-stat
+          span.kc-stat__value.kc-result-time
+          span.kc-stat__label Время
+      .kc-mistakes hidden=true
+        h3.kc-mistakes__title Ошибки
+        ul.kc-mistakes__list
+      button.kc-button.restart-button type="button" Ещё раз
