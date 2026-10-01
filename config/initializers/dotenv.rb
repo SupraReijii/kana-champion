@@ -1,3 +1,3 @@
 if defined? Dotenv
-  Dotenv.load! './.env'
+  Dotenv.load! '/home/devops/kana-champion/.env'
 end
