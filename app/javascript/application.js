@@ -5,20 +5,19 @@ import { $ } from "jquery"
 
 let game_container = $('.game')
 let points = 0
-let game_kanas = {
-    "a": "あ", "i": "い", "u": "う", "e": "え", "o": "お",
-    "ka": "か", "na": "な", "ta": "た"
-}
-let kanas_list = shuffle(Object.keys(game_kanas))
-let intervalVariable = undefined;
-let intervalTime = 5;
-let timeleft = 0;
+let game_kanas = {}
+let kanas_list = undefined
+let intervalVariable = undefined
+let intervalTime = 5
+let timeleft = 0
 
 
 $('.start-button').on('click', function (){
-    $('.start-button').css('visibility', 'hidden')
-    start_timer()
-    game_logic()
+    loadKanas().then(r => {
+        $('.start-button').css('visibility', 'hidden')
+        start_timer()
+        game_logic()
+    })
 })
 
 $(document).on('keydown', '#input_kana', function(e) {
@@ -45,6 +44,19 @@ function shuffle(array) {
         [array[i], array[j]] = [array[j], array[i]];
     }
     return array
+}
+
+async function loadKanas() {
+    const response = await fetch('api/kana')
+    const data = await response.json()
+
+    data.forEach((val) => {
+        game_kanas[val.translation.toString()] = val.kana
+    })
+
+    console.log(game_kanas)
+    kanas_list = shuffle(Object.keys(game_kanas))
+    console.log(kanas_list)
 }
 
 function game_logic(){
