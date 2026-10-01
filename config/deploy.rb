@@ -10,9 +10,13 @@ set :rbenv_type, :user
 set :rbenv_ruby, File.read(".ruby-version").strip
 set :rbenv_prefix, "RBENV_ROOT=#{fetch(:rbenv_path)} "\
   "RBENV_VERSION=#{fetch(:rbenv_ruby)} "\
+  "RAILS_MASTER_KEY=$(cat /home/#{fetch(:user)}/#{fetch(:application)}/config/master.key) "\
   "/usr/bin/rbenv exec"
 set :rbenv_map_bins, %w[rake gem bundle ruby rails]
 
+set :nvm_type, :user
+set :nvm_node, "v24.21.0"
+set :nvm_map_bins, %w{node npm yarn rake}
 
 set :format, :airbrussh
 Airbrussh.configure do |airbrussh|

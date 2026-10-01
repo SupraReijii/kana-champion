@@ -34,6 +34,7 @@ group :development do
   gem "capistrano-rbenv", require: false
   gem "capistrano-rails", require: false
   gem "capistrano-copy-files", require: false
+  gem "capistrano-nvm", require: false
   gem "airbrussh"
 end
 

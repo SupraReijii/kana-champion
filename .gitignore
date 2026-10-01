@@ -42,3 +42,5 @@
 .idea
 .kamal
 vendor
+
+config/secrets.yml
