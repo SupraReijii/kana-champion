@@ -28,9 +28,18 @@ end
 
 group :development do
   gem "web-console"
+
+  gem "capistrano"
+  gem "capistrano-bundler", require: false
+  gem "capistrano-rbenv", require: false
+  gem "capistrano-rails", require: false
+  gem "capistrano-copy-files", require: false
+  gem "airbrussh"
 end
 
-
+group :production do
+  gem "unicorn"
+end
 
 gem "slim-rails", "~> 4.0"
 

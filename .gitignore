@@ -40,6 +40,5 @@
 /node_modules
 .env
 .idea
-*.lock
 .kamal
 vendor
