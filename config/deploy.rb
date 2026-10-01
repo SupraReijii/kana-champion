@@ -16,7 +16,11 @@ set :rbenv_map_bins, %w[rake gem bundle ruby rails]
 
 set :nvm_type, :user
 set :nvm_node, "v24.21.0"
-set :nvm_map_bins, %w{node npm yarn rake}
+set :nvm_map_bins, %w{node npm yarn}
+
+set :default_env, {
+  path: "/home/devops/.nvm/versions/node/v24.21.0/bin:$PATH"
+}
 
 set :format, :airbrussh
 Airbrussh.configure do |airbrussh|
