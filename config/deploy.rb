@@ -18,6 +18,13 @@ set :nvm_type, :user
 set :nvm_node, "v24.21.0"
 set :nvm_map_bins, %w{node npm yarn}
 
+set :linked_dirs, %w[
+  log
+  tmp/pids
+  tmp/cache
+  tmp/sockets
+]
+
 set :default_env, {
   path: "/home/devops/.nvm/versions/node/v24.21.0/bin:$PATH"
 }
