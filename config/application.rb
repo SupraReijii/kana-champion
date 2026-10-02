@@ -8,7 +8,7 @@ require "active_storage/engine"
 require "action_controller/railtie"
 require "action_text/engine"
 require "action_view/railtie"
-#require "action_cable/engine"
+require "action_cable/engine"
 require "dotenv/load"
 
 Bundler.require(*Rails.groups)
