@@ -11,10 +11,10 @@ let mistakes = []
 let intervalVariable = undefined
 let intervalTime = 10
 let timeleft = 0
+let types = undefined
 
-// Delegated handlers: the game page can be loaded via Turbo after this script runs
 $(document).on('click', '.start-button, .restart-button', function () {
-    let types = $('input[name="kana_type"]:checked').map((_, el) => el.value).get()
+    types = $('input[name="kana_type"]:checked').map((_, el) => el.value).get()
     if (types.length === 0) {
         show_screen('start')
         $('.kc-error').prop('hidden', false)
@@ -69,7 +69,8 @@ function shuffle(array) {
 }
 
 async function loadKanas(types) {
-    const response = await fetch('/api/kana?type=' + encodeURIComponent(types.join(',')))
+    const game_types = encodeURIComponent(types.join(','))
+    const response = await fetch('/api/kana?type=' + game_types)
     const data = await response.json()
     kanas_list = shuffle(data.map(val => ({ kana: val.kana, translation: val.translation.toString() })))
     total = kanas_list.length
@@ -114,10 +115,12 @@ function game_end() {
     $('.kc-result-points').text(points + '/' + total)
     $('.kc-result-accuracy').text(Math.round(points / total * 100) + '%')
     $('.kc-result-time').text(format_time(timeleft) + 's')
+    let score = calculate_score(points, total, timeleft)
+    $('.kc-result-score').text(score)
     const gameResults = {
         game: {
-            game_name: 'classic',
-            points: 0,
+            game_name: 'classic,' + encodeURIComponent(types.join(',')),
+            points: score,
             time: format_time(timeleft),
             kana_count: total,
             kana_right: points,
@@ -156,6 +159,11 @@ function game_end() {
     $('.kc-mistakes').prop('hidden', mistakes.length === 0)
 
     show_screen('result')
+}
+
+function calculate_score(right, total, ms) {
+    let seconds = Math.max(ms / 1000, Math.E)
+    return Math.round(right / total / Math.log(seconds) * 1000)
 }
 
 function start_timer() {

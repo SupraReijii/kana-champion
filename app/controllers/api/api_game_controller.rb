@@ -1,10 +1,12 @@
 class Api::ApiGameController < ApplicationController
+  def show
+  end
   def create
     game = Game.new(game_params)
     if game.save
-      render json: { status: 'ok' }
+      render json: { status: "ok" }
     else
-      render json: { status: 'error', message: game.errors }
+      render json: { status: "error", message: game.errors }
     end
   end
 
