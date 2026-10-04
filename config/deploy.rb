@@ -16,13 +16,17 @@ set :rbenv_map_bins, %w[rake gem bundle ruby rails]
 
 set :nvm_type, :user
 set :nvm_node, "v24.21.0"
-set :nvm_map_bins, %w{node npm yarn}
+set :nvm_map_bins, %w[node npm yarn]
 
 set :linked_dirs, %w[
   log
   tmp/pids
   tmp/cache
   tmp/sockets
+]
+
+set :linked_files, %w[
+  .env
 ]
 
 set :default_env, {
