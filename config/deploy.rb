@@ -25,10 +25,6 @@ set :linked_dirs, %w[
   tmp/sockets
 ]
 
-set :linked_files, %w[
-  .env
-]
-
 set :default_env, {
   path: "/home/devops/.nvm/versions/node/v24.21.0/bin:$PATH"
 }
