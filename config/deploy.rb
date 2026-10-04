@@ -23,6 +23,11 @@ set :linked_dirs, %w[
   tmp/pids
   tmp/cache
   tmp/sockets
+  public/assets
+  public/system
+  public/uploads
+  public/packs
+  app/assets/builds
 ]
 
 set :default_env, {
@@ -74,3 +79,29 @@ set :branch, ENV["BRANCH"] || "master"
 
 # Uncomment the following to require manually verifying the host key before first deploy.
 # set :ssh_options, verify_host_key: :secure
+namespace :deploy do
+  namespace :unicorn do
+    desc "Stop unicorn"
+    task :stop do
+      on roles(:app), in: :sequence, wait: 5 do
+        execute "sudo systemctl stop unicorn"
+      end
+    end
+
+    desc "Start unicorn"
+    task :start do
+      on roles(:app), in: :sequence, wait: 5 do
+        execute "sudo systemctl start unicorn"
+      end
+    end
+
+    desc "Restart unicorn"
+    task :restart do
+      on roles(:app), in: :sequence, wait: 5 do
+        execute "sudo systemctl reload unicorn || sudo systemctl restart unicorn"
+      end
+    end
+  end
+end
+
+after "deploy:published", "unicorn:restart"

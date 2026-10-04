@@ -12,8 +12,15 @@ let intervalVariable = undefined
 let intervalTime = 10
 let timeleft = 0
 let types = undefined
+let name = undefined
 
 $(document).on('click', '.start-button, .restart-button', function () {
+    if (name === undefined) {
+        name = $('#input_name').val().trim()
+        if ((name.length === 0) || (name.length > 255)) {
+            name = 'Аноним'
+        }
+    }
     types = $('input[name="kana_type"]:checked').map((_, el) => el.value).get()
     if (types.length === 0) {
         show_screen('start')
@@ -119,11 +126,12 @@ function game_end() {
     $('.kc-result-score').text(score)
     const gameResults = {
         game: {
-            game_name: 'classic,' + encodeURIComponent(types.join(',')),
+            game_name: 'classic,' + types.join(','),
             points: score,
             time: format_time(timeleft),
             kana_count: total,
             kana_right: points,
+            name: name
         }
     }
     fetch('api/game', {

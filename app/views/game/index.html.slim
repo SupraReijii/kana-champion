@@ -1,8 +1,5 @@
 .kc
-  header.kc-header
-    = link_to root_path, class: "kc-logo" do
-      span.kc-logo__mark 仮
-      span.kc-logo__name Kana Champion
+  = render "shared/header"
 
   main.kc-stage
     section.kc-screen.kc-screen--start
@@ -22,6 +19,7 @@
             span.kc-option__name Катакана
 
       p.kc-error hidden=true Выбери хотя бы одну азбуку
+      input#input_name type="text" placeholder="Введи имя"
       button.kc-button.start-button type="button" Начать
 
     section.kc-screen.kc-screen--game hidden=true

@@ -1,4 +1,59 @@
-h1 Dashboard#index
-p Find me in app/views/dashboard/index.html.slim
+.kc
+  = render "shared/header"
 
-= link_to "Начать игру", game_index_path
+  main.kc-home
+    section.kc-hero
+      .kc-hero__glyphs aria-hidden="true"
+        span あ
+        span カ
+        span な
+      h1.kc-title かな
+      p.kc-subtitle Тренажёр хираганы и катаканы на скорость. Угадывай чтение символов и попади в таблицу рекордов.
+      = link_to "Начать игру", game_index_path, class: "kc-button kc-button--link"
+
+    section.kc-stats
+      .kc-stat
+        span.kc-stat__value = @games_count
+        span.kc-stat__label Игр сыграно
+      .kc-stat
+        span.kc-stat__value = @best_score || "—"
+        span.kc-stat__label Рекорд
+
+    section.kc-section
+      h2.kc-section__title Как играть
+      ol.kc-steps
+        li.kc-step
+          span.kc-step__num 1
+          span Выбери хирагану, катакану или обе азбуки
+        li.kc-step
+          span.kc-step__num 2
+          span Вводи ромадзи для каждого символа и жми Enter
+        li.kc-step
+          span.kc-step__num 3
+          span Соревнуйся с друзььями, кто наберет больше всех баллов!
+
+    section.kc-section
+      h2.kc-section__title Рекорды
+      .kc-boards
+        - @leaderboards.each_key.with_index do |mode, i|
+          input.kc-boards__radio type="radio" name="leaderboard" id="board-#{mode}" checked=i.zero?
+        .kc-tabs
+          - @leaderboards.each do |mode, board|
+            label.kc-tab for="board-#{mode}"
+              span.kc-tab__glyph = board[:glyph]
+              span.kc-tab__name = board[:title]
+
+        - @leaderboards.each do |mode, board|
+          .kc-boards__panel class="kc-boards__panel--#{mode}"
+            - if board[:games].any?
+              ol.kc-leaderboard
+                - board[:games].each_with_index do |game, i|
+                  li.kc-leaderboard__row class=("is-top" if i.zero?)
+                    span.kc-leaderboard__rank = i + 1
+                    span.kc-leaderboard__name = game.name
+                    span.kc-leaderboard__score = game.points
+                    span.kc-leaderboard__meta
+                      | #{game.kana_right}/#{game.kana_count} · #{game.time}s
+                    span.kc-leaderboard__date = game.created_at.strftime("%d.%m.%Y")
+            - else
+              p.kc-empty Пока никто не играл — стань первым!

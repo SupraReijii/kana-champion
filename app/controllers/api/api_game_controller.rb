@@ -13,6 +13,6 @@ class Api::ApiGameController < ApplicationController
 
   private
   def game_params
-    params.require(:game).permit(:game_name, :points, :time, :kana_count, :kana_right)
+    params.require(:game).permit(:game_name, :points, :time, :kana_count, :kana_right, :name)
   end
 end
