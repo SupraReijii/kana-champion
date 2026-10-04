@@ -3,10 +3,11 @@
 
   main.kc-stage
     section.kc-screen.kc-screen--start
-      h1.kc-title かな
-      p.kc-subtitle Вводи ромадзи для каждого символа — как можно быстрее и без ошибок.
+      h1.kc-heading Новая игра
+      p.kc-lead Вводи ромадзи для каждого символа: как можно быстрее и без ошибок.
 
-      .kc-options
+      fieldset.kc-options
+        legend.kc-label Азбука
         label.kc-option
           input type="checkbox" name="kana_type" value="hiragana" checked=true
           span.kc-option__card
@@ -18,48 +19,52 @@
             span.kc-option__glyph ア
             span.kc-option__name Катакана
 
-      p.kc-error hidden=true Выбери хотя бы одну азбуку
-      input#input_name type="text" placeholder="Введи имя"
+      p.kc-error hidden=true Отметь хотя бы одну азбуку, чтобы начать.
+
+      label.kc-label for="input_name" Имя в таблице рекордов
+      input#input_name type="text" placeholder="Аноним" maxlength="255" autocomplete="nickname"
       button.kc-button.start-button type="button" Начать
 
     section.kc-screen.kc-screen--game hidden=true
       .kc-hud
-        .kc-hud__item
-          span.kc-hud__label Время
+        .kc-hud__item.kc-hud__item--time
           span.kc-hud__value.timer 0.00
+          span.kc-hud__label секунд
         .kc-hud__item
-          span.kc-hud__label Верно
           span.kc-hud__value.kc-points 0
+          span.kc-hud__label верно
         .kc-hud__item
-          span.kc-hud__label Осталось
           span.kc-hud__value.kc-left 0
+          span.kc-hud__label осталось
       .kc-progress
         .kc-progress__bar
 
       .kc-card
         p.current_kana
       form.kc-answer autocomplete="off"
+        label.kc-visually-hidden for="input_kana" Чтение символа латиницей
         input#input_kana type="text" placeholder="romaji" autocapitalize="off" spellcheck="false"
         span.kc-hint Enter — ответить
-      p.kc-feedback
+      p.kc-feedback aria-live="polite"
 
     section.kc-screen.kc-screen--result hidden=true
-      h2.kc-result__title おわり
-      p.kc-subtitle Игра окончена
+      h2.kc-heading Готово
       .kc-score
+        svg.kc-score__hanamaru viewBox="0 0 260 200" aria-hidden="true"
+          path d="M146.3 37.6 A1 1 0 0 1 191.4 51.3 A1 1 0 0 1 220.1 78.1 A1 1 0 0 1 224.6 110.8 A1 1 0 0 1 203.8 140.5 A1 1 0 0 1 163.2 159.5 A1 1 0 0 1 113.7 162.4 A1 1 0 0 1 68.6 148.7 A1 1 0 0 1 39.9 121.9 A1 1 0 0 1 35.4 89.2 A1 1 0 0 1 56.2 59.5 A1 1 0 0 1 96.8 40.5 A1 1 0 0 1 146.3 37.6 M142.9 50.6 L153.2 52.4 L163.1 55.1 L172.2 58.7 L180.5 63.1 L187.7 68.2 L193.8 73.9 L198.5 80.1 L201.9 86.7 L203.9 93.5 L204.4 100.4 L203.4 107.2 L201.0 113.9 L197.2 120.3 L192.1 126.3 L185.8 131.7 L178.4 136.5 L170.0 140.5 L161.0 143.7 L151.3 146.0 L141.3 147.5 L131.1 147.9 L120.9 147.5 L111.0 146.0 L101.4 143.7 L92.5 140.6 L84.4 136.6 L77.1 132.0 L71.0 126.7 L66.1 120.9 L62.4 114.8 L60.1 108.3 L59.2 101.8 L59.7 95.2 L61.5 88.8 L64.7 82.6 L69.2 76.8 L74.9 71.4 L81.6 66.7 L89.3 62.6 L97.7 59.3 L106.7 56.8 L116.2 55.2 L125.8 54.5 L135.5 54.6 L145.1 55.7 L154.3 57.6 L163.0 60.4 L171.0 63.9 L178.1 68.1 L184.3 73.0" pathLength="1"
         span.kc-score__value.kc-result-score
         span.kc-score__label баллов
-      .kc-stats
+      dl.kc-stats
         .kc-stat
-          span.kc-stat__value.kc-result-points
-          span.kc-stat__label Верно
+          dt.kc-stat__label Верно
+          dd.kc-stat__value.kc-result-points
         .kc-stat
-          span.kc-stat__value.kc-result-accuracy
-          span.kc-stat__label Точность
+          dt.kc-stat__label Точность
+          dd.kc-stat__value.kc-result-accuracy
         .kc-stat
-          span.kc-stat__value.kc-result-time
-          span.kc-stat__label Время
+          dt.kc-stat__label Время
+          dd.kc-stat__value.kc-result-time
       .kc-mistakes hidden=true
-        h3.kc-mistakes__title Ошибки
+        h3.kc-mistakes__title Работа над ошибками
         ul.kc-mistakes__list
-      button.kc-button.restart-button type="button" Ещё раз
+      button.kc-button.restart-button type="button" Сыграть ещё раз

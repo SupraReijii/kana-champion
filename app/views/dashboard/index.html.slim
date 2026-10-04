@@ -3,34 +3,27 @@
 
   main.kc-home
     section.kc-hero
-      .kc-hero__glyphs aria-hidden="true"
-        span あ
-        span カ
-        span な
-      h1.kc-title かな
-      p.kc-subtitle Тренажёр хираганы и катаканы на скорость. Угадывай чтение символов и попади в таблицу рекордов.
-      = link_to "Начать игру", game_index_path, class: "kc-button kc-button--link"
+      / Title written into manuscript-paper squares, small ャ sits in its own square like in 原稿用紙
+      h1.kc-genko aria-label="Kana Champion"
+        - %w[か な チ ャ ン ピ オ ン].each_with_index do |char, i|
+          span.kc-genko__cell class=("is-small" if char == "ャ") style="--i: #{i}" aria-hidden="true" = char
+      p.kc-lead Тренажёр хираганы и катаканы на скорость. Видишь символ — пишешь его чтение латиницей.
+      = link_to "Начать игру", game_index_path, class: "kc-button"
 
-    section.kc-stats
-      .kc-stat
-        span.kc-stat__value = @games_count
-        span.kc-stat__label Игр сыграно
-      .kc-stat
-        span.kc-stat__value = @best_score || "—"
-        span.kc-stat__label Рекорд
+      dl.kc-facts
+        div
+          dt Игр сыграно
+          dd = @games_count
+        div
+          dt Рекорд
+          dd = @best_score || "пока нет"
 
     section.kc-section
       h2.kc-section__title Как играть
       ol.kc-steps
-        li.kc-step
-          span.kc-step__num 1
-          span Выбери хирагану, катакану или обе азбуки
-        li.kc-step
-          span.kc-step__num 2
-          span Вводи ромадзи для каждого символа и жми Enter
-        li.kc-step
-          span.kc-step__num 3
-          span Соревнуйся с друзььями, кто наберет больше всех баллов!
+        li Выбери хирагану, катакану или обе азбуки.
+        li Вводи ромадзи для каждого символа и жми Enter.
+        li Чем точнее и быстрее, тем больше баллов. Соревнуйся с друзьями за первое место.
 
     section.kc-section
       h2.kc-section__title Рекорды
@@ -50,10 +43,13 @@
                 - board[:games].each_with_index do |game, i|
                   li.kc-leaderboard__row class=("is-top" if i.zero?)
                     span.kc-leaderboard__rank = i + 1
-                    span.kc-leaderboard__name = game.name
+                    span.kc-leaderboard__name
+                      span = game.name
                     span.kc-leaderboard__score = game.points
                     span.kc-leaderboard__meta
-                      | #{game.kana_right}/#{game.kana_count} · #{game.time}s
+                      | #{game.kana_right} из #{game.kana_count} за #{game.time} с
                     span.kc-leaderboard__date = game.created_at.strftime("%d.%m.%Y")
             - else
-              p.kc-empty Пока никто не играл — стань первым!
+              .kc-empty
+                p В этой таблице пока пусто. Первая сыгранная партия займёт первое место.
+                = link_to "Сыграть", game_index_path, class: "kc-link"

@@ -1,15 +1,32 @@
 // Entry point for your Sass build
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&family=Fira+Sans:wght@400;500;700&display=swap');
+//
+// Visual idea: a kana practice notebook (練習帳). Manuscript-paper squares
+// with dashed cross guides, blue-black ink for everything you write,
+// a teacher's red pen only for mistakes and the final grade (花丸).
+@import url('https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Golos+Text:wght@400;500;600&display=swap');
 
-$paper: #f6f1e7;
-$paper-dark: #ece4d3;
-$ink: #1f1b16;
-$ink-soft: #6b6257;
-$vermilion: #d1452c;
-$vermilion-dark: #b23722;
-$matcha: #4f7a3a;
-$line: #d9cfbc;
-$radius: 14px;
+$paper: #f7f9f5;
+$sheet: #ffffff;
+$grid: #7fb09a;        // manuscript-paper green
+$grid-soft: #cfe3d8;
+$ink: #1f2a5a;         // blue-black fountain pen ink
+$ink-soft: #5b6483;
+$red-pen: #d3263a;
+$correct: #2e7d57;
+$marker: #ffe66b;
+
+$kana-font: "Klee One", "Hiragino Mincho ProN", serif;
+$ui-font: "Golos Text", system-ui, sans-serif;
+
+$column: 640px;
+
+// Square with dashed cross guides, like a practice-notebook cell
+@mixin practice-cell($line: $grid-soft) {
+  background:
+    repeating-linear-gradient(to bottom, $line 0 4px, transparent 4px 8px) center / 1px 100% no-repeat,
+    repeating-linear-gradient(to right, $line 0 4px, transparent 4px 8px) center / 100% 1px no-repeat,
+    $sheet;
+}
 
 *,
 *::before,
@@ -22,16 +39,30 @@ body {
   min-height: 100vh;
   background: $paper;
   color: $ink;
-  font: 1rem "Fira Sans", sans-serif;
+  font: 400 1rem/1.55 $ui-font;
 }
 
 p,
 label {
-  font: 1rem "Fira Sans", sans-serif;
+  font: inherit;
 }
 
 [hidden] {
   display: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid $ink;
+  outline-offset: 3px;
+}
+
+.kc-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .kc {
@@ -41,9 +72,11 @@ label {
   padding: 0 16px;
 }
 
+// ---------- Header ----------
+
 .kc-header {
-  max-width: 640px;
   width: 100%;
+  max-width: $column;
   margin: 0 auto;
   padding: 20px 0;
 }
@@ -51,66 +84,344 @@ label {
 .kc-logo {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   color: $ink;
+  font-weight: 600;
   text-decoration: none;
-  font-weight: 700;
-  letter-spacing: 0.02em;
 }
 
+// 勉強 written into two adjacent manuscript squares
 .kc-logo__mark {
+  display: flex;
+
+  span {
+    @include practice-cell;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid $grid;
+    font: 600 1.4rem $kana-font;
+  }
+
+  span + span { margin-left: -1.5px; }
+}
+
+// ---------- Shared type ----------
+
+.kc-heading {
+  margin: 0 0 8px;
+  font-size: 1.95rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.kc-lead {
+  max-width: 34em;
+  margin: 0 0 28px;
+  color: $ink-soft;
+  font-size: 1.125rem;
+}
+
+.kc-label {
+  display: block;
+  margin: 0 0 8px;
+  padding: 0;
+  color: $ink-soft;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.kc-link {
+  color: $ink;
+  font-weight: 500;
+  text-decoration-color: $grid;
+  text-underline-offset: 4px;
+
+  &:hover { text-decoration-color: $ink; }
+}
+
+// ---------- Buttons ----------
+
+.kc-button {
+  display: inline-block;
+  padding: 14px 28px;
+  border: 0;
+  border-radius: 4px;
+  background: $ink;
+  color: $sheet;
+  font: 600 1.05rem $ui-font;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: #151d42; }
+  &:active { transform: translateY(1px); }
+  &:disabled { opacity: 0.6; cursor: progress; }
+}
+
+// ---------- Home ----------
+
+.kc-home {
+  width: 100%;
+  max-width: $column;
+  margin: 0 auto;
+  padding-bottom: 72px;
+}
+
+.kc-hero {
+  padding: 40px 0 8px;
+}
+
+// The one loud element: the title written into manuscript squares
+.kc-genko {
+  --cell: min(4.75rem, calc((100vw - 32px) / 8));
+  display: flex;
+  margin: 0 0 32px;
+  line-height: 1;
+}
+
+.kc-genko__cell {
+  @include practice-cell;
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
-  background: $vermilion;
-  color: #fff;
-  font-family: "Noto Sans JP", sans-serif;
-  font-weight: 900;
+  width: var(--cell);
+  height: var(--cell);
+  border: 1.5px solid $grid;
+  font: 600 calc(var(--cell) * 0.68) $kana-font;
+  animation: kc-write 0.45s ease-out both;
+  animation-delay: calc(var(--i) * 90ms);
+
+  & + & { margin-left: -1.5px; }
+
+  // Small kana sit in the lower-left corner of their own square
+  &.is-small {
+    place-items: end start;
+    padding: 0 0 calc(var(--cell) * 0.12) calc(var(--cell) * 0.18);
+    font-size: calc(var(--cell) * 0.46);
+  }
 }
+
+@keyframes kc-write {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+.kc-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 40px;
+  margin: 40px 0 0;
+  padding-top: 20px;
+  border-top: 1px solid $grid-soft;
+
+  dt {
+    color: $ink-soft;
+    font-size: 0.875rem;
+  }
+
+  dd {
+    margin: 0;
+    font: 600 1.6rem $kana-font;
+  }
+}
+
+.kc-section {
+  margin-top: 56px;
+}
+
+.kc-section__title {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.kc-steps {
+  counter-reset: step;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  li {
+    counter-increment: step;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 0;
+  }
+
+  li::before {
+    @include practice-cell;
+    content: counter(step);
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border: 1.5px solid $grid;
+    font: 600 1.2rem $kana-font;
+  }
+}
+
+// ---------- Leaderboards: index tabs over a ruled sheet ----------
+
+.kc-boards__radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.kc-boards__panel {
+  display: none;
+}
+
+.kc-tabs {
+  display: flex;
+  gap: 4px;
+  position: relative;
+  z-index: 1;
+  margin-bottom: -1.5px;
+}
+
+.kc-tab {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1.5px solid transparent;
+  border-bottom: 0;
+  border-radius: 6px 6px 0 0;
+  color: $ink-soft;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+
+  &:hover { color: $ink; }
+}
+
+.kc-tab__glyph {
+  font: 600 1.15rem $kana-font;
+}
+
+@each $mode in hiragana, katakana, mixed {
+  #board-#{$mode}:checked ~ .kc-tabs .kc-tab[for="board-#{$mode}"] {
+    border-color: $grid;
+    background: $sheet;
+    color: $ink;
+  }
+
+  #board-#{$mode}:checked ~ .kc-boards__panel--#{$mode} {
+    display: block;
+  }
+
+  #board-#{$mode}:focus-visible ~ .kc-tabs .kc-tab[for="board-#{$mode}"] {
+    outline: 2px solid $ink;
+    outline-offset: 2px;
+  }
+}
+
+.kc-leaderboard,
+.kc-empty {
+  margin: 0;
+  border: 1.5px solid $grid;
+  border-radius: 0 6px 6px 6px;
+  background: $sheet;
+}
+
+.kc-leaderboard {
+  padding: 0 20px;
+  list-style: none;
+}
+
+.kc-leaderboard__row {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr) auto auto 5.5rem;
+  grid-template-areas: "rank name score meta date";
+  align-items: baseline;
+  gap: 2px 16px;
+  padding: 14px 0;
+  font-variant-numeric: tabular-nums;
+
+  & + & {
+    border-top: 1px solid $grid-soft;
+  }
+}
+
+.kc-leaderboard__rank {
+  grid-area: rank;
+  color: $ink-soft;
+  font: 600 1.1rem $kana-font;
+}
+
+.kc-leaderboard__name {
+  grid-area: name;
+  overflow: hidden;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// First place gets a highlighter stroke, like marking the best line in a notebook
+.is-top .kc-leaderboard__name span {
+  background: linear-gradient(transparent 50%, $marker 50%, $marker 90%, transparent 90%);
+}
+
+.is-top .kc-leaderboard__rank {
+  color: $ink;
+}
+
+.kc-leaderboard__score {
+  grid-area: score;
+  font: 600 1.3rem $kana-font;
+  text-align: right;
+}
+
+.kc-leaderboard__meta,
+.kc-leaderboard__date {
+  color: $ink-soft;
+  font-size: 0.875rem;
+}
+
+.kc-leaderboard__meta { grid-area: meta; }
+
+.kc-leaderboard__date {
+  grid-area: date;
+  text-align: right;
+}
+
+.kc-empty {
+  padding: 28px 20px;
+
+  p { margin: 0 0 8px; color: $ink-soft; }
+}
+
+// ---------- Game: layout ----------
 
 .kc-stage {
   flex: 1;
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding-bottom: 48px;
+  padding: 24px 0 64px;
 }
 
 .kc-screen {
   width: 100%;
-  max-width: 520px;
+  max-width: 560px;
+}
+
+.kc-screen--game,
+.kc-screen--result {
   text-align: center;
-  animation: kc-fade 0.25s ease-out;
 }
 
-@keyframes kc-fade {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-}
-
-.kc-title,
-.kc-result__title {
-  margin: 0;
-  font-family: "Noto Sans JP", sans-serif;
-  font-weight: 900;
-  font-size: clamp(3.5rem, 14vw, 6rem);
-  line-height: 1;
-}
-
-.kc-subtitle {
-  margin: 12px 0 32px;
-  color: $ink-soft;
-}
-
-// ---------- Kana type options ----------
+// ---------- Start screen ----------
 
 .kc-options {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-  margin-bottom: 16px;
+  display: flex;
+  gap: 16px;
+  margin: 0 0 24px;
+  padding: 0;
+  border: 0;
 }
 
 .kc-option {
@@ -127,92 +438,99 @@ label {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 22px 12px;
-  border: 2px solid $line;
-  border-radius: $radius;
-  background: #fffdf8;
-  transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
-}
-
-.kc-option:hover .kc-option__card {
-  transform: translateY(-2px);
-}
-
-.kc-option input:checked + .kc-option__card {
-  border-color: $vermilion;
-  box-shadow: 0 0 0 3px rgba($vermilion, 0.15);
-}
-
-.kc-option input:focus-visible + .kc-option__card {
-  outline: 2px solid $ink;
-  outline-offset: 2px;
+  gap: 8px;
+  color: $ink-soft;
 }
 
 .kc-option__glyph {
-  font-family: "Noto Sans JP", sans-serif;
-  font-size: 2.6rem;
-  font-weight: 700;
-  line-height: 1.1;
+  @include practice-cell;
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border: 1.5px dashed $grid;
+  color: $grid;
+  font: 600 3.4rem $kana-font;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.kc-option:hover .kc-option__glyph { color: $ink-soft; }
+
+.kc-option input:checked + .kc-option__card {
+  color: $ink;
+
+  .kc-option__glyph {
+    border: 2px solid $ink;
+    color: $ink;
+  }
+}
+
+.kc-option input:focus-visible + .kc-option__card .kc-option__glyph {
+  outline: 2px solid $ink;
+  outline-offset: 3px;
 }
 
 .kc-option__name {
-  color: $ink-soft;
   font-weight: 500;
 }
 
 .kc-error {
-  margin: 0 0 16px;
-  color: $vermilion;
+  margin: -8px 0 24px;
+  color: $red-pen;
 }
 
-// ---------- Buttons ----------
-
-.kc-button {
+// Inputs are a single writing line, not a box
+#input_kana,
+#input_name {
   width: 100%;
-  margin-top: 8px;
-  padding: 16px;
+  margin: 0;
+  padding: 8px 2px;
   border: 0;
-  border-radius: $radius;
-  background: $vermilion;
-  color: #fff;
-  font: 700 1.1rem "Fira Sans", sans-serif;
-  cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+  border-bottom: 2px solid $grid;
+  border-radius: 0;
+  background: transparent;
+  color: $ink;
+  font: 500 1.25rem $ui-font;
+  outline: none;
+  transition: border-color 0.15s;
 
-  &:hover { background: $vermilion-dark; }
-  &:active { transform: scale(0.98); }
-  &:disabled { opacity: 0.6; cursor: progress; }
+  &::placeholder { color: $grid; }
+  &:focus { border-bottom-color: $ink; }
 }
 
-// ---------- Game ----------
+#input_name {
+  margin-bottom: 32px;
+}
+
+// ---------- Game screen ----------
 
 .kc-hud {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin-bottom: 14px;
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-bottom: 12px;
 }
 
 .kc-hud__item {
   display: flex;
-  flex-direction: column;
-  padding: 10px;
-  border-radius: 10px;
-  background: $paper-dark;
-}
-
-.kc-hud__label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: $ink-soft;
+  align-items: baseline;
+  gap: 6px;
 }
 
 .kc-hud__value {
-  font-size: 1.4rem;
-  font-weight: 700;
+  font-size: 1.25rem;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
+}
+
+.kc-hud__item--time .kc-hud__value {
+  min-width: 4ch;
+  text-align: right;
+}
+
+.kc-hud__label {
+  color: $ink-soft;
+  font-size: 0.875rem;
 }
 
 .timer {
@@ -220,34 +538,30 @@ label {
 }
 
 .kc-progress {
-  height: 6px;
-  margin-bottom: 24px;
-  border-radius: 3px;
-  background: $paper-dark;
-  overflow: hidden;
+  max-width: 18rem;
+  height: 3px;
+  margin: 0 auto 28px;
+  background: $grid-soft;
 }
 
 .kc-progress__bar {
   width: 0;
   height: 100%;
-  background: $vermilion;
+  background: $ink;
   transition: width 0.25s ease;
 }
 
 .kc-card {
+  @include practice-cell;
   display: grid;
   place-items: center;
-  aspect-ratio: 4 / 3;
-  max-height: 300px;
-  width: 100%;
-  margin-bottom: 20px;
-  border: 2px solid $line;
-  border-radius: 20px;
-  background: #fffdf8;
-  box-shadow: 0 10px 30px rgba($ink, 0.06);
+  width: min(18rem, 100%);
+  aspect-ratio: 1;
+  margin: 0 auto 28px;
+  border: 2px solid $grid;
 
-  &.is-correct { animation: kc-pop 0.3s; border-color: $matcha; }
-  &.is-wrong { animation: kc-shake 0.3s; border-color: $vermilion; }
+  &.is-correct { border-color: $correct; animation: kc-pop 0.3s; }
+  &.is-wrong { border-color: $red-pen; animation: kc-shake 0.3s; }
 }
 
 @keyframes kc-pop {
@@ -261,399 +575,172 @@ label {
 
 .current_kana {
   margin: 0;
-  font-family: "Noto Sans JP", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
-  font-weight: 700;
-  font-size: clamp(5rem, 24vw, 9rem);
-  line-height: 1;
+  font: 600 clamp(7rem, 38vw, 11rem) / 1 $kana-font;
 }
 
 .kc-answer {
-  position: relative;
-}
+  max-width: 18rem;
+  margin: 0 auto;
 
-#input_kana, #input_name {
-  width: 100%;
-  margin: 0;
-  padding: 16px 20px;
-  border: 2px solid $line;
-  border-radius: $radius;
-  background: #fff;
-  color: $ink;
-  font: 500 1.5rem "Fira Sans", sans-serif;
-  text-align: center;
-  outline: none;
-  transition: border-color 0.15s;
-
-  &:focus { border-color: $ink; }
-}
-
-#input_name {
-  margin-bottom: 8px;
-  padding: 14px 18px;
-  font-size: 1.1rem;
-
-  &::placeholder { color: $ink-soft; }
+  #input_kana {
+    font-size: 1.6rem;
+    text-align: center;
+  }
 }
 
 .kc-hint {
   display: block;
   margin-top: 8px;
-  font-size: 0.85rem;
   color: $ink-soft;
+  font-size: 0.875rem;
 }
 
 .kc-feedback {
-  min-height: 1.5em;
-  margin: 12px 0 0;
+  min-height: 1.6em;
+  margin: 16px 0 0;
   font-weight: 500;
 
-  &.is-correct { color: $matcha; }
-  &.is-wrong { color: $vermilion; }
+  &.is-correct { color: $correct; }
+  &.is-wrong { color: $red-pen; }
 }
 
-// ---------- Result ----------
+// ---------- Result: the teacher's 花丸 around the score ----------
 
 .kc-score {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: -12px 0 24px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(20rem, 100%);
+  aspect-ratio: 1.3;
+  margin: 8px auto 24px;
+}
+
+.kc-score__hanamaru {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: $red-pen;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-dasharray: 1;
+  animation: kc-draw 1.1s 0.2s ease-in-out both;
+}
+
+@keyframes kc-draw {
+  from { stroke-dashoffset: 1; }
+  to { stroke-dashoffset: 0; }
 }
 
 .kc-score__value {
-  font-size: clamp(3rem, 12vw, 4.5rem);
-  font-weight: 700;
-  line-height: 1.1;
-  color: $vermilion;
+  position: relative;
+  margin-top: -0.4em;
+  font: 600 clamp(3rem, 14vw, 4.25rem) / 1 $kana-font;
   font-variant-numeric: tabular-nums;
 }
 
 .kc-score__label {
+  position: absolute;
+  bottom: 30%;
   color: $ink-soft;
+  font-size: 0.875rem;
 }
 
 .kc-stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 0 0 32px;
+  border-top: 1px solid $grid-soft;
+  border-bottom: 1px solid $grid-soft;
 }
 
 .kc-stat {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 18px 8px;
-  border: 2px solid $line;
-  border-radius: $radius;
-  background: #fffdf8;
-}
+  padding: 14px 8px;
 
-.kc-stat__value {
-  font-size: 1.6rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  & + & { border-left: 1px solid $grid-soft; }
 }
 
 .kc-stat__label {
-  font-size: 0.8rem;
   color: $ink-soft;
+  font-size: 0.875rem;
+}
+
+.kc-stat__value {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .kc-mistakes {
-  margin-bottom: 16px;
+  margin-bottom: 32px;
   text-align: left;
 }
 
 .kc-mistakes__title {
-  margin: 0 0 10px;
-  font-size: 1rem;
+  margin: 0 0 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
 }
 
 .kc-mistakes__list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
 
   li {
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: $paper-dark;
-    font-size: 0.9rem;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    padding: 8px 0;
+    border-bottom: 1px solid $grid-soft;
   }
 
   .kc-mistakes__kana {
-    font-family: "Noto Sans JP", sans-serif;
-    font-weight: 700;
-    margin-right: 6px;
+    min-width: 2em;
+    font: 600 1.6rem $kana-font;
   }
 
   s {
-    color: $vermilion;
-    margin-right: 6px;
+    color: $red-pen;
+    text-decoration-thickness: 2px;
   }
 }
 
-// ---------- Home ----------
+// ---------- Small screens ----------
 
-.kc-home {
-  width: 100%;
-  max-width: 640px;
-  margin: 0 auto;
-  padding-bottom: 64px;
-  animation: kc-fade 0.25s ease-out;
-}
-
-.kc-hero {
-  position: relative;
-  isolation: isolate;
-  padding: 32px 0 40px;
-  text-align: center;
-
-  .kc-subtitle {
-    max-width: 440px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-}
-
-.kc-hero__glyphs {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-  font-family: "Noto Sans JP", sans-serif;
-  font-weight: 900;
-  font-size: clamp(6rem, 30vw, 11rem);
-  line-height: 1;
-  color: $paper-dark;
-
-  span {
-    position: absolute;
+@media (max-width: 480px) {
+  .kc-leaderboard {
+    padding: 0 14px;
   }
 
-  span:nth-child(1) { top: -10px; left: -2%; transform: rotate(-8deg); }
-  span:nth-child(2) { top: 30%; right: -4%; transform: rotate(10deg); }
-  span:nth-child(3) { bottom: -20px; left: 22%; transform: rotate(-4deg); opacity: 0.6; }
-}
-
-.kc-button--link {
-  display: inline-block;
-  width: auto;
-  min-width: 240px;
-  text-decoration: none;
-}
-
-.kc-section {
-  margin-top: 40px;
-}
-
-.kc-section__title {
-  margin: 0 0 14px;
-  font-size: 1.25rem;
-}
-
-// Leaderboard tabs: radio inputs switch panels without JS
-.kc-boards__radio {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.kc-boards__panel {
-  display: none;
-}
-
-.kc-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
-  padding: 4px;
-  border-radius: $radius;
-  background: $paper-dark;
-}
-
-.kc-tab {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 6px;
-  border-radius: 10px;
-  color: $ink-soft;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-
-  &:hover { color: $ink; }
-}
-
-.kc-tab__glyph {
-  font-family: "Noto Sans JP", sans-serif;
-  font-weight: 700;
-}
-
-@each $mode in hiragana, katakana, mixed {
-  #board-#{$mode}:checked ~ .kc-tabs .kc-tab[for="board-#{$mode}"] {
-    background: #fffdf8;
-    color: $ink;
-    box-shadow: 0 1px 4px rgba($ink, 0.08);
-  }
-
-  #board-#{$mode}:checked ~ .kc-boards__panel--#{$mode} {
-    display: block;
-    animation: kc-fade 0.2s ease-out;
-  }
-
-  #board-#{$mode}:focus-visible ~ .kc-tabs .kc-tab[for="board-#{$mode}"] {
-    outline: 2px solid $ink;
-    outline-offset: 2px;
-  }
-}
-
-.kc-steps {
-  display: grid;
-  gap: 10px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.kc-step {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  border: 2px solid $line;
-  border-radius: $radius;
-  background: #fffdf8;
-}
-
-.kc-step__num {
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: $ink;
-  color: $paper;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
-.kc-leaderboard {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  border: 2px solid $line;
-  border-radius: $radius;
-  background: #fffdf8;
-  overflow: hidden;
-}
-
-.kc-leaderboard__row {
-  display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr) auto auto 5.5rem;
-  grid-template-areas: "rank name score meta date";
-  align-items: center;
-  gap: 4px 14px;
-  padding: 12px 16px;
-  font-variant-numeric: tabular-nums;
-
-  & + & {
-    border-top: 1px solid $line;
-  }
-
-  &.is-top {
-    background: rgba($vermilion, 0.07);
-
-    .kc-leaderboard__rank {
-      background: $vermilion;
-      color: #fff;
-    }
-  }
-}
-
-.kc-leaderboard__rank {
-  grid-area: rank;
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 8px;
-  background: $paper-dark;
-  font-weight: 700;
-}
-
-.kc-leaderboard__name {
-  grid-area: name;
-  overflow: hidden;
-  font-weight: 500;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.kc-leaderboard__score {
-  grid-area: score;
-  font-size: 1.2rem;
-  font-weight: 700;
-  text-align: right;
-}
-
-.kc-leaderboard__meta,
-.kc-leaderboard__date {
-  color: $ink-soft;
-  font-size: 0.9rem;
-}
-
-.kc-leaderboard__meta { grid-area: meta; }
-
-.kc-leaderboard__date {
-  grid-area: date;
-  text-align: right;
-}
-
-.kc-empty {
-  padding: 28px 16px;
-  border: 2px dashed $line;
-  border-radius: $radius;
-  color: $ink-soft;
-  text-align: center;
-}
-
-@media (max-width: 420px) {
   // Name with stats underneath, score on the right
   .kc-leaderboard__row {
-    grid-template-columns: 2rem minmax(0, 1fr) auto;
+    grid-template-columns: 1.5rem minmax(0, 1fr) auto;
     grid-template-areas:
       "rank name score"
       "rank meta score";
+    gap: 2px 12px;
   }
 
-  .kc-leaderboard__meta {
-    font-size: 0.8rem;
-  }
-
-  .kc-leaderboard__date {
-    display: none;
-  }
+  .kc-leaderboard__meta { font-size: 0.8rem; }
+  .kc-leaderboard__date { display: none; }
 
   .kc-tab {
-    flex-direction: column;
-    gap: 2px;
-    font-size: 0.85rem;
+    padding: 8px 10px;
+    font-size: 0.875rem;
   }
+
+  .kc-hud { gap: 20px; }
 }
 
-@media (max-width: 420px) {
-  .kc-hud__value { font-size: 1.15rem; }
-  .kc-stat__value { font-size: 1.3rem; }
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
 }
