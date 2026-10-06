@@ -14,7 +14,12 @@ require "dotenv/load"
 Bundler.require(*Rails.groups)
 
 module KanaChampion
+  REDIS = Redis.new(
+    host: "82.146.32.181",
+    password: ENV["REDIS_PASSWORD"],
+    db: ENV['RAILS_ENV'].eql?('production') ? "1" : "0" )
   class Application < Rails::Application
+
     config.load_defaults 8.1
 
     config.autoload_lib(ignore: %w[assets tasks])

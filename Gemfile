@@ -45,3 +45,7 @@ end
 gem "slim-rails", "~> 4.0"
 
 gem "overmind", "~> 2.5"
+
+gem "redis", "~> 6.0"
+
+gem "sidekiq", "~> 8.1"

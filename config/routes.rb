@@ -5,6 +5,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     get :kana, controller: :api_kana, action: :index
+    post :kana, controller: :api_kana, action: :update
     post :game, controller: :api_game, action: :create
   end
 end

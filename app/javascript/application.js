@@ -48,12 +48,14 @@ $(document).on('submit', '.kc-answer', function (e) {
 
     let value = $('#input_kana').val().trim().toLowerCase()
     if (value === '') return
-
+    console.log(current)
     let correct = value === current.translation.toLowerCase()
     if (correct) {
         points++
+        increment_kana(current.type, current.translation, true)
     } else {
         mistakes.push({ kana: current.kana, translation: current.translation, answer: value })
+        increment_kana(current.type, current.translation, false)
     }
     show_feedback(correct)
 
@@ -67,6 +69,39 @@ $(document).on('submit', '.kc-answer', function (e) {
 
 $(document).on('turbo:before-visit', stop_timer)
 
+
+function increment_kana(type, kana, correct) {
+    let kana_result = undefined
+    if (correct === true){
+        kana_result = {
+            type: type,
+            kana: kana,
+            increment: 'yes',
+            correct: 'yes'
+        }
+    } else {
+        kana_result = {
+            type: type,
+            kana: kana,
+            increment: 'yes'
+        }
+    }
+    fetch('api/kana', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(kana_result)
+    })
+        .then(resp => {
+            if (!resp.ok) {
+                throw new Error('HTTP Error! Code: ' + resp.status)
+            }
+            return resp.json()
+        })
+}
+
 function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
@@ -79,7 +114,7 @@ async function loadKanas(types) {
     const game_types = encodeURIComponent(types.join(','))
     const response = await fetch('/api/kana?type=' + game_types)
     const data = await response.json()
-    kanas_list = shuffle(data.map(val => ({ kana: val.kana, translation: val.translation.toString() })))
+    kanas_list = shuffle(data.map(val => ({ kana: val.kana, translation: val.translation.toString(), type: val.kana_type })))
     total = kanas_list.length
 }
 
